@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">TwitterLike</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_username">username</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_name">Name</string>
+    <string name="prompt_firstname">Firstname</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+    <string name="error_invalid_username">This username is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_incorrect_password_check">This password check is not the same</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_failed_registration">The registration process failed ! Please try again</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_timeline">TimelineActivity</string>
+</resources>
