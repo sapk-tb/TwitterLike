@@ -22,8 +22,8 @@ public class RegisterRequest implements Message {
         return "{" +
                 "\"username\":\"" + username + "\"," +
                 "\"password\":\"" + password + "\"," +
-                "\"username\":\"" + name + "\"," +
-                "\"username\":\"" + firstname + "\"" +
+                "\"name\":\"" + name + "\"," +
+                "\"firstname\":\"" + firstname + "\"" +
                 '}';
     }
 

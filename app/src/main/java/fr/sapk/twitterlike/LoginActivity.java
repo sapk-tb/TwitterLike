@@ -5,17 +5,20 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import fr.sapk.twitterlike.api.Api;
 import fr.sapk.twitterlike.api.message.LoginResponse;
@@ -41,6 +44,16 @@ public class LoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //Find if we haven't a token in cache
+        SharedPreferences settings = getPreferences(0); //TODO used a secure method
+        String token = settings.getString("secure-token", "");
+        Log.d("Login", "token from prefs: " + token);
+        if(!"".equals(token)){
+            //We have a token
+            Intent intent =  new Intent(this.getBaseContext(), TimelineActivity.class);
+            intent.putExtra("secure-token",token);
+            startActivity(intent);
+        }
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -63,6 +76,8 @@ public class LoginActivity extends AppCompatActivity{
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
     }
 
 
@@ -169,6 +184,7 @@ public class LoginActivity extends AppCompatActivity{
         private final Context context;
         private final String mUsername;
         private final String mPassword;
+        private LoginResponse response = null;
 
         UserLoginTask(Context c, String username, String password) {
             context = c;
@@ -179,10 +195,11 @@ public class LoginActivity extends AppCompatActivity{
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                LoginResponse response = Api.Login(mUsername,mPassword);
+                response = Api.Login(mUsername,mPassword);
                 return response.isOk();
             } catch (Exception ex) {
-                //TODO use toast to display exception catch
+                Toast.makeText(context, ex.getMessage(),
+                        Toast.LENGTH_LONG).show();
                 return false;
             }
         }
@@ -194,7 +211,14 @@ public class LoginActivity extends AppCompatActivity{
 
             if (success) {
                 //finish();
+                SharedPreferences settings = getPreferences(0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("secure-token", response.getSecureToken());
+                editor.commit(); //Save to local pref for later use
+                Log.d("Login", "token store in prefs: " +  settings.getString("secure-token",""));
+
                 Intent intent =  new Intent(context, TimelineActivity.class);
+                intent.putExtra("secure-token",response.getSecureToken());
                 startActivity(intent);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

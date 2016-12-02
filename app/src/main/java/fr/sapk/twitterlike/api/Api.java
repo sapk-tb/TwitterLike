@@ -6,6 +6,7 @@ import fr.sapk.twitterlike.api.message.LoginRequest;
 import fr.sapk.twitterlike.api.message.LoginResponse;
 import fr.sapk.twitterlike.api.message.RegisterRequest;
 import fr.sapk.twitterlike.api.message.RegisterResponse;
+import fr.sapk.twitterlike.api.message.UserResponse;
 
 
 /**
@@ -16,6 +17,16 @@ public class Api {
 
     static private String APIUrl = "http://vps288382.ovh.net/api/1/";
 
+    public static UserResponse CurrentUser(String token) throws Exception {
+
+        Request req = new Request("GET",
+                APIUrl+"private/user",
+                null,
+                token
+        );
+        JSONObject obj = req.send();
+        return new UserResponse(obj);
+    }
     public static LoginResponse Login(String username, String password) throws Exception {
 
         Request req = new Request("POST",
