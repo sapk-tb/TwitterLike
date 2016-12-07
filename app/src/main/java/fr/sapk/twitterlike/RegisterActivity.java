@@ -3,11 +3,8 @@ package fr.sapk.twitterlike;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -205,6 +202,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            if (!Api.isAvailable(context)) {
+                return false;
+            }
             try {
                 RegisterResponse response = Api.Register(mUsername,mPassword,mName,mFirstname);
                 return response.isOk();

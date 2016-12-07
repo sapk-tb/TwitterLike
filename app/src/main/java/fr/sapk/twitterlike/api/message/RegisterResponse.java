@@ -1,5 +1,7 @@
 package fr.sapk.twitterlike.api.message;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,6 +18,7 @@ public class RegisterResponse implements Response {
 
     public RegisterResponse(JSONObject obj) throws JSONException { //TODO force existence of this interface
         this.status = obj.getBoolean("status");
+        Log.d("TwitterLike","new"+this);
     }
     public RegisterResponse(String secureToken, boolean status) {
         this.status = status;

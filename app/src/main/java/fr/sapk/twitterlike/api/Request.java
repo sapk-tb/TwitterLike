@@ -4,11 +4,7 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -50,19 +46,23 @@ public class Request {
         Log.d("REST", "Start method:" + this.method + " uri:" + this.uri + " data:" + this.data+ " token:" + this.token);
         URL url = new URL(this.uri);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        Log.d("REST", "Request init");
         if ("PUT".equals(this.method) || this.method.equals("POST")) {
             conn.setDoOutput(true);
         }
+        Log.d("REST", "Request output params set");
         if(this.token != null){
             Log.d("REST", "Token set: " + this.token);
             conn.addRequestProperty("X-secure-Token", token);
         }
+        Log.d("REST", "Request token set");
 
         conn.setInstanceFollowRedirects(false);
         conn.setDoInput(true);
         conn.setRequestMethod(this.method);
-        conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-        conn.setRequestProperty("Accept", "application/json");
+        conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+        //conn.setRequestProperty("Accept", "application/json");
+        Log.d("REST", "Request ready");
         conn.connect();
         Log.d("REST", "Request open");
 
