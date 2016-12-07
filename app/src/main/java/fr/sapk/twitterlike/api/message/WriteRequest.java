@@ -25,7 +25,7 @@ public class WriteRequest implements Message {
     }
     @Override
     public String toString() {
-        return "LoginRequest{" +
+        return "WriteRequest{" +
                 "user_id='" + user_id + '\'' +
                 ", content='" + content + '\'' +
                 '}';

@@ -2,6 +2,7 @@ package fr.sapk.twitterlike.api;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -40,8 +41,8 @@ public class Request {
             this.data = data.toJSONString();
         }
     }
+    public String exec() throws Exception {
 
-    public JSONObject send() throws Exception {
         String output = "";
         Log.d("REST", "Start method:" + this.method + " uri:" + this.uri + " data:" + this.data+ " token:" + this.token);
         URL url = new URL(this.uri);
@@ -104,7 +105,7 @@ public class Request {
         String out = readStream(new BufferedInputStream(conn.getInputStream()));
         conn.disconnect();
         //*/
-        return new JSONObject(output);
+        return output;
     }
     /*
     private String readStream(InputStream is) {

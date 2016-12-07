@@ -74,7 +74,7 @@ public class TimelineActivity extends AppCompatActivity
         if (pager != null) {
             Adapter adapter = new Adapter(getSupportFragmentManager());
             adapter.addFragment(new MessagesFragment(), "Messages");
-            adapter.addFragment(new UsersFragment(), "Users");
+            //TODO adapter.addFragment(new UsersFragment(), "Users");
 
             pager.setAdapter(adapter);
         }

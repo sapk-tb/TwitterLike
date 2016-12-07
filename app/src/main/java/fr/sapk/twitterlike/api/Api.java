@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import fr.sapk.twitterlike.api.message.LoginRequest;
@@ -53,7 +54,7 @@ public class Api {
                 null,
                 token
         );
-        JSONObject obj = req.send();
+        JSONObject obj = new JSONObject(req.exec());
         return new UserResponse(obj);
     }
     public static LoginResponse Login(String username, String password) throws Exception {
@@ -62,7 +63,7 @@ public class Api {
                 APIUrl+"user/login",
                 new LoginRequest(username,password)
         );
-        JSONObject obj = req.send();
+        JSONObject obj = new JSONObject(req.exec());
         return new LoginResponse(obj); //return {"secureToken":"050ed50d-9e50-43da-83ff-fd512e196e04","user_id":"58334c24b69bfd002cfead9f","status":true}
     }
     public static RegisterResponse Register(String username, String password, String name, String firstname) throws Exception {
@@ -70,7 +71,7 @@ public class Api {
                 APIUrl+"user/register",
                 new RegisterRequest(username,password,name,firstname)
         );
-        JSONObject obj = req.send();
+        JSONObject obj = new JSONObject(req.exec());
         return new RegisterResponse(obj);
     }
 
@@ -80,7 +81,7 @@ public class Api {
                 new WriteRequest(userId,content),
                 token
         );
-        JSONObject obj = req.send();
+        JSONObject obj = new JSONObject(req.exec());
         return new WriteResponse(obj);
     }
 
@@ -90,7 +91,7 @@ public class Api {
                 null,
                 token
         );
-        JSONObject obj = req.send();
+        JSONArray obj = new JSONArray(req.exec());
         return new MessagesResponse(obj);
     }
     public static UsersResponse GetUsers(String token) throws Exception {
@@ -100,7 +101,7 @@ public class Api {
                 null,
                 token
         );
-        JSONObject obj = req.send();
+        JSONArray obj = new JSONArray(req.exec());
         return new UsersResponse(obj);
     }
 }

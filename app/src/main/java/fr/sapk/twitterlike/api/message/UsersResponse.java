@@ -26,14 +26,13 @@ public class UsersResponse implements Response {
         return users;
     }
 
-    public UsersResponse(JSONObject obj) throws JSONException { //TODO force existence of this interface
-        this.status = obj.getBoolean("status");
-        JSONArray uArray = obj.getJSONArray("users");
-        for (int i = 0; i< uArray.length(); i++) { ///TODO use iterator ?
-            JSONObject u = (JSONObject) uArray.get(i);
-            users.add(new UserModel(u.getString("username")));
+    public UsersResponse(JSONArray obj) throws JSONException { //TODO force existence of this interface
+        this.status = true; //obj.getBoolean("status");
+        for (int i = 0; i< obj.length(); i++) { ///TODO use iterator ?
+            JSONObject u = (JSONObject) obj.get(i);
+            //TODO users.add(new UserModel(u.getString("username")));
         }
-        Log.d("TwitterLike","new"+this);
+        Log.d("TwitterLike","new "+this);
     }
     public UsersResponse(List<UserModel> users) {
         this.users = users;
@@ -48,7 +47,7 @@ public class UsersResponse implements Response {
 
     @Override
     public String toString() {
-        return "LoginResponse{" +
+        return "UsersResponse{" +
                 "users='" + users + '\'' + //TODO
                 '}';
     }

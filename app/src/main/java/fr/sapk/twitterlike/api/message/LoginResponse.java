@@ -29,7 +29,7 @@ public class LoginResponse implements Response {
         this.secureToken = obj.getString("secureToken");
         this.userId = obj.getString("user_id");
         this.status = obj.getBoolean("status");
-        Log.d("TwitterLike","new"+this);
+        Log.d("TwitterLike","new "+this);
     }
     public LoginResponse(String secureToken, boolean status) {
         this.secureToken = secureToken;

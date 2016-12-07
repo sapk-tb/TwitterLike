@@ -52,7 +52,7 @@ public class UserResponse implements Response {
 
         this.name = obj.getString("name");
         this.firstname = obj.getString("firstname");
-        Log.d("TwitterLike","new"+this);
+        Log.d("TwitterLike","new "+this);
     }
 
     public UserResponse(String id, String username, List<String> roles, List<String> permissions, String name, String firstname) {
@@ -94,6 +94,6 @@ public class UserResponse implements Response {
 
     @Override
     public String toString() {
-        return "LoginResponse{" + '}';
+        return "UserResponse{" + '}';
     } //TODO
 }

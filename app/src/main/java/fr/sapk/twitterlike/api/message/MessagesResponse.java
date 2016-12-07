@@ -28,14 +28,18 @@ public class MessagesResponse implements Response {
         return messages;
     }
 
-    public MessagesResponse(JSONObject obj) throws JSONException { //TODO force existence of this interface
-        this.status = obj.getBoolean("status");
-        JSONArray messArray = obj.getJSONArray("messages");
-        for (int i = 0; i< messArray.length(); i++) { ///TODO use iterator ?
-            JSONObject m = (JSONObject) messArray.get(i);
-            messages.add(new MessageModel(m.getJSONObject("author").getString("username"), m.getString("content"), m.getLong("date")));
+    public MessagesResponse(JSONArray obj) throws JSONException { //TODO force existence of this interface
+        this.status = true; //obj.getBoolean("status");
+        for (int i = 0; i< obj.length(); i++) { ///TODO use iterator ?
+            JSONObject m = (JSONObject) obj.get(i);
+            Log.d("TwitterLike", m.toString());
+            try {
+                messages.add(new MessageModel(m.getJSONObject("author").getString("username"), m.getString("content"), m.getLong("date")));
+            }catch (JSONException ex){
+                Log.w("TwitterLike", "JSON Message invalid skipping :"+m.toString());
+            }
         }
-        Log.d("TwitterLike","new"+this);
+        Log.d("TwitterLike","new "+this);
     }
     public MessagesResponse(List<MessageModel> messages) {
         this.messages = messages;
@@ -50,7 +54,7 @@ public class MessagesResponse implements Response {
 
     @Override
     public String toString() {
-        return "LoginResponse{" +
+        return "MessagesResponse{" +
                 "messages='" + messages + '\'' + //TODO
                 '}';
     }

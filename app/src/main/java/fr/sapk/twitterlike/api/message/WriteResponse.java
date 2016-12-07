@@ -32,7 +32,7 @@ public class WriteResponse implements Response {
         this.status = obj.getBoolean("status");
         JSONObject m = obj.getJSONObject("message");
         this.message = new MessageModel(m.getJSONObject("author").getString("username"), m.getString("content"), m.getLong("date"));
-        Log.d("TwitterLike","new"+this);
+        Log.d("TwitterLike","new "+this);
     }
     public WriteResponse(MessageModel message) {
         this.message = message;
@@ -47,7 +47,7 @@ public class WriteResponse implements Response {
 
     @Override
     public String toString() {
-        return "LoginResponse{" +
+        return "WriteResponse{" +
                 "message='" + message + '\'' +
                 '}';
     }
