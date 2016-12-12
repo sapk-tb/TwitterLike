@@ -122,7 +122,7 @@ public class WriteMsgDialog extends DialogFragment {
                 return null;
             }
             try {
-                response = Api.Write(getArguments().getString("user_id"),params[0],Session.token);
+                response = Api.Write(Session.userId,params[0],Session.token);
                 return response.isOk();
             } catch (Exception e) {
                 e.printStackTrace();

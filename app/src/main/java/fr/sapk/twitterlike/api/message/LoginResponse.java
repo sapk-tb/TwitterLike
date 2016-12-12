@@ -18,7 +18,7 @@ public class LoginResponse implements Response {
         return secureToken;
     }
     public String getUserId() {
-        return secureToken;
+        return userId;
     }
 
     public boolean isOk() {
@@ -31,8 +31,9 @@ public class LoginResponse implements Response {
         this.status = obj.getBoolean("status");
         Log.d("TwitterLike","new "+this);
     }
-    public LoginResponse(String secureToken, boolean status) {
+    public LoginResponse(String secureToken, String userId, boolean status) {
         this.secureToken = secureToken;
+        this.userId = userId;
         this.status = status;
     }
 

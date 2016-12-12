@@ -5,12 +5,12 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -39,6 +39,7 @@ public class TimelineActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("TwitterLike", "Create Timeline activity : "+Session.userId+" : " + Session.token);
         setContentView(R.layout.activity_timeline);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -74,8 +75,7 @@ public class TimelineActivity extends AppCompatActivity
         if (pager != null) {
             Adapter adapter = new Adapter(getSupportFragmentManager());
             adapter.addFragment(new MessagesFragment(), "Messages");
-            //TODO adapter.addFragment(new UsersFragment(), "Users");
-
+            adapter.addFragment(new UsersFragment(), "Users");
             pager.setAdapter(adapter);
         }
     }

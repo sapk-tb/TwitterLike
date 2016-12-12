@@ -76,6 +76,7 @@ public class Api {
     }
 
     public static WriteResponse Write(String userId, String content, String token) throws Exception {
+        Log.d("API", "Write ("+userId+","+content+","+token+")");
         Request req = new Request("POST",
                 APIUrl+"private/message",
                 new WriteRequest(userId,content),
@@ -95,7 +96,6 @@ public class Api {
         return new MessagesResponse(obj);
     }
     public static UsersResponse GetUsers(String token) throws Exception {
-
         Request req = new Request("GET",
                 APIUrl+"private/user/list",
                 null,

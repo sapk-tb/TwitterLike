@@ -48,14 +48,14 @@ public class LoginActivity extends AppCompatActivity{
         //Find if we haven't a token in cache
         SharedPreferences settings = getPreferences(0); //TODO used a secure method
         String token = settings.getString("secure-token", "");
-        String userid = settings.getString("userid", "");
+        String userId = settings.getString("userId", "");
         Log.d("Login", "token from prefs: " + token);
-        if(!"".equals(token) && !"".equals(userid)){
+        if(!"".equals(token) && !"".equals(userId)){
             //We have a token and userid
             Intent intent =  new Intent(this.getBaseContext(), TimelineActivity.class);
             //intent.putExtra("secure-token",token);
             Session.token = token;
-            Session.userId = userid;
+            Session.userId = userId;
             startActivity(intent);
         }
         // Set up the login form.
@@ -226,9 +226,10 @@ public class LoginActivity extends AppCompatActivity{
                 SharedPreferences settings = getPreferences(0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString("secure-token", response.getSecureToken());
-                editor.putString("userid", response.getUserId());
+                editor.putString("userId", response.getUserId());
                 editor.commit(); //Save to local pref for later use
                 Log.d("Login", "token store in prefs: " +  settings.getString("secure-token",""));
+                Log.d("Login", "userId store in prefs: " +  settings.getString("userId",""));
 
                 Session.token = response.getSecureToken();
                 Session.userId = response.getUserId();
