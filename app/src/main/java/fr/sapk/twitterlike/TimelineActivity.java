@@ -5,21 +5,20 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +34,8 @@ import fr.sapk.twitterlike.session.Session;
 
 public class TimelineActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private MessagesFragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +75,8 @@ public class TimelineActivity extends AppCompatActivity
         ViewPager pager = (ViewPager) findViewById(R.id.viewpager);
         if (pager != null) {
             Adapter adapter = new Adapter(getSupportFragmentManager());
-            adapter.addFragment(new MessagesFragment(), "Messages");
+            mFragment = new MessagesFragment();
+            adapter.addFragment(mFragment, "Messages");
             adapter.addFragment(new UsersFragment(), "Users");
             pager.setAdapter(adapter);
         }
@@ -108,6 +110,11 @@ public class TimelineActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
             //TODO open settings view
+        }
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_refresh) {
+            mFragment.refresh();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

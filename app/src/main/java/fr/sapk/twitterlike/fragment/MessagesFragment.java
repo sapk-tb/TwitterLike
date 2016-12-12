@@ -56,6 +56,13 @@ public class MessagesFragment extends Fragment {
     }
 
     /**
+     * RE-Load messages
+     */
+    public void refresh() {
+        loading();
+    }
+
+    /**
      * Load messages
      */
     private void loading() {

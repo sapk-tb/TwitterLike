@@ -23,6 +23,15 @@ public class MessageModel {
         this.date = date;
     }
 
+    @Override
+    public String toString() {
+        return "MessageModel{" +
+                "username='" + username + '\'' +
+                ", msg='" + msg + '\'' +
+                ", date=" + date +
+                '}';
+    }
+
     /**
      * Gets username.
      *

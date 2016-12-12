@@ -7,6 +7,13 @@ public class UserModel {
 
     private String username;
 
+    @Override
+    public String toString() {
+        return "UserModel{" +
+                "username='" + username + '\'' +
+                '}';
+    }
+
     /**
      * Instantiates a new User.
      *

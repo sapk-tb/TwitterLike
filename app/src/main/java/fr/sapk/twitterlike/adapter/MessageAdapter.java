@@ -3,6 +3,7 @@ package fr.sapk.twitterlike.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +66,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
      */
     @Override
     public void onBindViewHolder(final MessageAdapter.ViewHolder vh, final int position) {
+        Log.d("TwitterLike","Genrating position "+position+" -> "+messages.get(position));
         vh.username.setText(messages.get(position).getUsername());
         vh.message.setText(messages.get(position).getMsg());
         try {

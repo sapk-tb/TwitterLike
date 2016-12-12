@@ -3,13 +3,8 @@ package fr.sapk.twitterlike.api.message;
 
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import fr.sapk.twitterlike.model.MessageModel;
 
