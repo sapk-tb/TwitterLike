@@ -1,9 +1,8 @@
 package fr.sapk.twitterlike;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -22,71 +21,92 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.sapk.twitterlike.api.Api;
 import fr.sapk.twitterlike.api.message.UserResponse;
 import fr.sapk.twitterlike.fragment.MessagesFragment;
+import fr.sapk.twitterlike.fragment.MessagesFragment_;
 import fr.sapk.twitterlike.fragment.UsersFragment;
+import fr.sapk.twitterlike.fragment.UsersFragment_;
 import fr.sapk.twitterlike.fragment.WriteMsgDialog;
-import fr.sapk.twitterlike.session.Session;
+import fr.sapk.twitterlike.session.Session_;
 
+@EActivity(R.layout.activity_timeline)
 public class TimelineActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private MessagesFragment mFragment;
+    private UsersFragment uFragment;
+
+    @Pref
+    Session_ session;
+
+    @ViewById
+    NavigationView navigationView;
+    /*
+    @ViewById
+    TextView identityText;
+    @ViewById
+    TextView usernameText;
+    */
+    @ViewById
+    FloatingActionButton floatingButton;
+    @ViewById
+    ViewPager viewpager;
+    @ViewById
+    DrawerLayout drawerLayout;
+    @ViewById
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("TwitterLike", "Create Timeline activity : "+Session.userId+" : " + Session.token);
-        setContentView(R.layout.activity_timeline);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Log.d("TwitterLike", "Create Timeline activity : " + session.userId().get() + " : " + session.token().get());
+        if (!(session.token().exists() && !session.token().get().equals("") && session.userId().exists() && !session.userId().get().equals(""))) {
+            finish();
+        }
+    }
+    @AfterViews
+    public void initUI() {
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
-
-                WriteMsgDialog.getInstance(Session.token, Session.userId).show(TimelineActivity.this.getFragmentManager(), "write");
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Bundle extras = getIntent().getExtras(); //Get token
-        View header = navigationView.getHeaderView(0); //Acces header
-
-        //Get data and pass the header
-        (new GetCurrentUserTask(drawer.getContext(), Session.token, header)).execute((Void) null);
-
-
-        ViewPager pager = (ViewPager) findViewById(R.id.viewpager);
-        if (pager != null) {
+        if (viewpager != null) {
             Adapter adapter = new Adapter(getSupportFragmentManager());
-            mFragment = new MessagesFragment();
+            mFragment = MessagesFragment_.builder().token(session.token().get()).build();
+            uFragment = UsersFragment_.builder().token(session.token().get()).build();
             adapter.addFragment(mFragment, "Messages");
-            adapter.addFragment(new UsersFragment(), "Users");
-            pager.setAdapter(adapter);
+            adapter.addFragment(uFragment, "Users");
+            viewpager.setAdapter(adapter);
         }
+
+        View header = navigationView.getHeaderView(0); //Acces header
+        GetCurrentUser((TextView) header.findViewById(R.id.identityText), (TextView) header.findViewById(R.id.usernameText));
+    }
+    @Click({R.id.floatingButton})
+    void onFabClick(){
+        WriteMsgDialog.getInstance().show(this.getFragmentManager(), "write");
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -121,13 +141,7 @@ public class TimelineActivity extends AppCompatActivity
     }
 
     public void doLogout() {
-        SharedPreferences settings = getPreferences(0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.remove("secure-token");
-        editor.remove("userid");
-        editor.commit(); //Save to local pref for later use
-        Session.token = "";
-        Session.userId = "";
+        session.clear();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -149,8 +163,7 @@ public class TimelineActivity extends AppCompatActivity
             finish();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -214,48 +227,35 @@ public class TimelineActivity extends AppCompatActivity
             return fragmentTitle.get(position);
         }
     }
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class GetCurrentUserTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final Context context;
-        private final String token;
-        private final View header;
-
-        private UserResponse response = null;
-
-        GetCurrentUserTask(Context c, String token , View header) {
-            context = c;
-            this.token = token;
-            this.header = header;
+    @Background
+    public void GetCurrentUser(TextView identityText, TextView usernameText) {
+        if (!Api.isAvailable(this)) {
+            Handler handler =  new Handler(this.getMainLooper());
+            final Context context = this.getBaseContext();
+            handler.post( new Runnable(){
+                public void run(){
+                    Toast.makeText(context, "No internet connection !",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+            return;
         }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            if (!Api.isAvailable(context)) {
-                return false;
+        try {
+            UserResponse response = Api.CurrentUser(session.token().get());
+            if (response.isOk()) {
+                identityText.setText(response.getFirstname() + " " + response.getName());
+                usernameText.setText("@" + response.getUsername());
             }
-            try {
-                response = Api.CurrentUser(token);
-                return response.isOk();
-            } catch (Exception ex) {
-                Toast.makeText(context, ex.toString(),
-                        Toast.LENGTH_LONG).show();
-                return false;
-            }
+        } catch (final Exception ex) {
+            Handler handler =  new Handler(this.getMainLooper());
+            final Context context = this.getBaseContext();
+            handler.post( new Runnable(){
+                public void run(){
+                    Toast.makeText(context, ex.toString(),
+                            Toast.LENGTH_LONG).show();
+                }
+            });
         }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            if (success) {
-                ((TextView) header.findViewById(R.id.identityText)).setText(response.getFirstname() +" "+response.getName());
-                ((TextView) header.findViewById(R.id.usernameText)).setText("@"+response.getUsername());
-            } else {
-                //TODO detect if not logged and go back to login
-            }
-        }
-
     }
 }

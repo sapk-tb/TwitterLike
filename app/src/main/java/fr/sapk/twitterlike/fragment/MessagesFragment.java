@@ -1,7 +1,5 @@
 package fr.sapk.twitterlike.fragment;
 
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,21 +9,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.UiThread;
+
 import fr.sapk.twitterlike.R;
 import fr.sapk.twitterlike.adapter.MessageAdapter;
 import fr.sapk.twitterlike.api.Api;
 import fr.sapk.twitterlike.api.message.MessagesResponse;
-import fr.sapk.twitterlike.session.Session;
+
 
 /**
  * The type Messages fragment.
  */
+@EFragment
 public class MessagesFragment extends Fragment {
 
     //UI
     SwipeRefreshLayout swipeLayout;
     RecyclerView recyclerView;
     MessageAdapter adapter;
+@FragmentArg
+    String token;
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     /**
      * On create view view.
@@ -67,7 +77,8 @@ public class MessagesFragment extends Fragment {
      */
     private void loading() {
         swipeLayout.setRefreshing(true);
-        new GetMessagesAsyncTask(MessagesFragment.this.getActivity()).execute();
+        GetMessages(token);
+        swipeLayout.setRefreshing(false);
     }
 
     /**
@@ -107,53 +118,25 @@ public class MessagesFragment extends Fragment {
         });
     }
 
-    /**
-     * The type Get messages async task.
-     */
-    protected class GetMessagesAsyncTask extends AsyncTask<String, Void, Boolean> {
-
-        Context context;
-        private MessagesResponse response = null;
-        /**
-         * Instantiates a new Get messages async task.
-         *
-         * @param context the context
-         */
-        GetMessagesAsyncTask(final Context context) {
-            this.context = context;
+    @Background
+    void GetMessages(String token) {
+        if (!Api.isAvailable(this.getContext())) {
+            return;
         }
-
-        /**
-         * Do in background list.
-         *
-         * @param params the params
-         * @return the list
-         */
-        @Override
-        protected Boolean doInBackground(String... params) {
-            if (!Api.isAvailable(context)) {
-                return null;
-            }
-            try {
-                response = Api.GetMessages(Session.token); //TODO Session
-                return response.isOk();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return false;
-        }
-
-        /**
-         * On post execute.
-         *
-         * @param success the success state
-         */
-        @Override
-        public void onPostExecute(final Boolean success) {
-            if (success) {
-                adapter.addMessage(response.getMessages());
-            }
-            swipeLayout.setRefreshing(false);
+        try {
+            MessagesResponse response = Api.GetMessages(token);
+            updateView(response);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+    @UiThread
+    void updateView(MessagesResponse response) {
+
+        if (response.isOk()) {
+            adapter.addMessage(response.getMessages());
+        }
+    }
+
 }

@@ -13,32 +13,38 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+
 import fr.sapk.twitterlike.R;
 import fr.sapk.twitterlike.api.Api;
 import fr.sapk.twitterlike.api.message.WriteResponse;
-import fr.sapk.twitterlike.session.Session;
+import fr.sapk.twitterlike.session.Session_;
 
 /**
  * The type Write msg dialog.
  */
+@EFragment
 public class WriteMsgDialog extends DialogFragment {
+
+    @Pref
+    Session_ session;
 
     private EditText message;
 
     /**
      * Gets instance.
      *
-     * @param token  the token
-     * @param userId the user id
      * @return the instance
      */
-    public static WriteMsgDialog getInstance(final String token, final String userId) {
+    public static WriteMsgDialog getInstance() {
         WriteMsgDialog f = new WriteMsgDialog();
         // Supply num input as an argument.
-        Bundle args = new Bundle();
-        args.putString("token", token);
-        args.putString("user_id", userId);
-        f.setArguments(args);
+        //Bundle args = new Bundle();
+        //args.putString("token", token);
+        //args.putString("user_id", userId);
+        //f.setArguments(args);
         return f;
     }
 
@@ -122,7 +128,7 @@ public class WriteMsgDialog extends DialogFragment {
                 return null;
             }
             try {
-                response = Api.Write(Session.userId,params[0],Session.token);
+                response = Api.Write(session.userId().get(),params[0],session.token().get()); //TODO
                 return response.isOk();
             } catch (Exception e) {
                 e.printStackTrace();

@@ -1,10 +1,16 @@
 package fr.sapk.twitterlike.session;
 
+import org.androidannotations.annotations.sharedpreferences.DefaultString;
+import org.androidannotations.annotations.sharedpreferences.SharedPref;
+
 /**
  * The type Session.
  */
-public class Session {
+@SharedPref(value=SharedPref.Scope.APPLICATION_DEFAULT)
+public interface Session {
+    @DefaultString("")
+    String token();
 
-    public static String token;
-    public static String userId;
+    @DefaultString("")
+    String userId();
 }

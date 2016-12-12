@@ -1,7 +1,6 @@
 package fr.sapk.twitterlike.fragment;
 
-import android.content.Context;
-import android.os.AsyncTask;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,21 +10,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+
 import fr.sapk.twitterlike.R;
 import fr.sapk.twitterlike.adapter.UserAdapter;
 import fr.sapk.twitterlike.api.Api;
 import fr.sapk.twitterlike.api.message.UsersResponse;
-import fr.sapk.twitterlike.session.Session;
 
 /**
  * The type Users fragment.
  */
+@EFragment
 public class UsersFragment extends Fragment {
 
     //UI
     SwipeRefreshLayout swipeLayout;
     RecyclerView recyclerView;
     UserAdapter adapter;
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+@FragmentArg
+    String token;
 
     /**
      * On create view view.
@@ -60,7 +69,9 @@ public class UsersFragment extends Fragment {
      */
     private void loading() {
         swipeLayout.setRefreshing(true);
-        new GetUsersAsyncTask(UsersFragment.this.getActivity()).execute();
+        GetUsers(token);
+        swipeLayout.setRefreshing(false);
+        //new GetUsersAsyncTask(UsersFragment.this.getActivity()).execute();
     }
 
     /**
@@ -100,55 +111,19 @@ public class UsersFragment extends Fragment {
         });
     }
 
-    /**
-     * The type Get users async task.
-     */
-    protected class GetUsersAsyncTask extends AsyncTask<String, Void, Boolean> {
-
-        private final Context context;
-        private UsersResponse response = null;
-
-        /**
-         * Instantiates a new Get users async task.
-         *
-         * @param ctx the ctx
-         */
-        GetUsersAsyncTask(Context ctx) {
-            this.context = ctx;
+    @Background
+    void GetUsers(String token){
+        if (!Api.isAvailable(this.getContext())) {
+            return;
         }
-
-        /**
-         * Do in background list.
-         *
-         * @param params the params
-         * @return the list
-         */
-        @Override
-        protected Boolean doInBackground(String... params) {
-
-            if (!Api.isAvailable(context)) {
-                return null;
-            }
-            try {
-                response = Api.GetUsers(Session.token);
-                return response.isOk();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return false;
-        }
-
-        /**
-         * On post execute.
-         *
-         * @param success the success of the request
-         */
-        @Override
-        public void onPostExecute(final Boolean success) {
-            if (success) {
+        try {
+            UsersResponse response = Api.GetUsers(token);
+            if(response.isOk()){
                 adapter.setUser(response.getUsers());
             }
-            swipeLayout.setRefreshing(false);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
 }
